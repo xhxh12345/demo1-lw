@@ -2,9 +2,16 @@ import tkinter as tk
 import tkinter.font as tkFont
 import tkinter.ttk
 import tkinter.messagebox
+
+import PIL
+from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageTk
 import cv2
 from tkinter import filedialog
-from imageProcessing import image_split_and_concat
+
+import imageProcessing.image_split_and_concat
+from imageProcessing.image_split_and_concat import size
+from imageProcessing.image_split_and_concat import concat
 
 
 # 打开系统文件路径方法
@@ -115,7 +122,6 @@ class frame3:
         self.frame3 = tk.Frame(root)
         self.frame3.pack()
         # 所有控件
-
         fontStyle = tkFont.Font(family="Lucida Grande", size=14)
         event_str = tk.StringVar()
         cap_str = tk.StringVar()
@@ -124,7 +130,7 @@ class frame3:
 
         title = tk.Label(self.frame3, text='Ai视频识别分析系统', font=fontStyle2)
         # 画布
-        canvas1 = tk.Canvas(self.frame3, width=1536, height=864, bg='white')
+        self.canvas1 = tk.Canvas(self.frame3, width=1536, height=864, bg='white')
         # notebook1
         frameOne = tkinter.Frame()
         frameTwo = tkinter.Frame()
@@ -157,7 +163,7 @@ class frame3:
         tkinter.Button(frame4, text='16/s', font=fontStyle).grid(column=3, row=1)
         #
         tkinter.Button(frame5, text='编辑导入', font=fontStyle, command=self.open_excel).grid(column=1, row=1, padx=10)
-        tkinter.Button(frame5, text='确认导入', font=fontStyle).grid(column=2, row=1)
+        tkinter.Button(frame5, text='确认导入', font=fontStyle, command=self.import_excel).grid(column=2, row=1)
 
         # entry1
         entry1 = tk.Entry(self.frame3, textvariable=event_str, width=20, font=(15))
@@ -196,9 +202,14 @@ class frame3:
         tkinter.Button(self.frame3, text=' 发布 web ', font=fontStyle).grid(column=17, row=7)
         tkinter.Button(self.frame3, text='发布到屏幕2', font=fontStyle, command=self.login_frame5).grid(column=17, row=8)
 
+        tkinter.Button(self.frame3, text='1宫格', font=fontStyle, command=self.size_1).grid(column=1, row=12)
+        tkinter.Button(self.frame3, text='4宫格', font=fontStyle, command=self.size_4).grid(column=6, row=12)
+        tkinter.Button(self.frame3, text='9宫格', font=fontStyle, command=self.size_9).grid(column=8, row=12)
+        tkinter.Button(self.frame3, text='16宫格', font=fontStyle, command=self.size_16).grid(column=13, row=12)
+
         # 布局
         title.grid(column=7, row=0, pady=20)
-        canvas1.grid(column=0, row=1, columnspan=16, rowspan=9)
+        self.canvas1.grid(column=0, row=1, columnspan=16, rowspan=9)
         notebook1.grid(column=17, row=1)
 
         entry1.grid(column=17, row=2, sticky='s')
@@ -226,6 +237,35 @@ class frame3:
         import os
         finPath = os.getcwd() + '/多路视频流导入配置表.xlsx'
         os.startfile(finPath)
+
+    # 确认导入配置表
+    def import_excel(self):
+        while True:
+            img_concat = imageProcessing.image_split_and_concat.image(size)
+            # print(img_concat)
+            # im = cv2.resize(im, (1920, 1080))
+            cvimage = cv2.cvtColor(img_concat, cv2.COLOR_BGR2RGBA)
+            pilImage = PIL.Image.fromarray(cvimage)
+            tkImage = PIL.ImageTk.PhotoImage(image=pilImage)
+            self.canvas1.create_image(0, 0, anchor='nw', image=tkImage)
+            self.canvas1.update()
+
+    # 更改宫格大小
+    def size_1(self):
+        global size
+        size = 1
+
+    def size_4(self):
+        global size
+        size = 4
+
+    def size_9(self):
+        global size
+        size = 9
+
+    def size_16(self):
+        global size
+        size = 16
 
 
 # 第四个页面 高密
@@ -308,11 +348,8 @@ class frame5:
         canvas3 = tk.Canvas(self.frame5, width=320, height=180, bg='white')
         # 布局
 
-
-
-
         title.grid(column=7, row=0, pady=20)
-        canvas1.grid(column=0, row=1, columnspan=16, rowspan=9,pady =14)
+        canvas1.grid(column=0, row=1, columnspan=16, rowspan=9, pady=14)
         label1.grid(column=18, row=1)
 
         canvas2.grid(column=18, row=4)

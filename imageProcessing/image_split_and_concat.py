@@ -1,29 +1,27 @@
-#pictures9.py
+# pictures9.py
 import glob
 import pandas as pd
 import numpy as np
 import cv2 as cv
 from PIL import Image, ImageDraw, ImageFont
 
-
 # 画布尺寸
 ori_w = 1536
 ori_h = 864
 
-size = 9
-scale = int(size ** 0.5)
-new_w = int(ori_w / scale)
-new_h = int(ori_h / scale)
+size = 16
 
-data_frameA=pd.read_excel(r'多路视频流导入配置表.xlsx',usecols='A', header=0, keep_default_na=False)
+data_frameA = pd.read_excel(r'多路视频流导入配置表.xlsx', usecols='A', header=0, keep_default_na=False)
 path_list = data_frameA.values.tolist()
 
 while [''] in path_list:
     path_list.remove([''])
-print(path_list)
 
+
+# print(path_list)
+
+# 创建无信号图像
 def creat_no_signal(new_w, new_h):
-    # 创建无信号图像
     no_signal_img = Image.new('RGB', (new_w, new_h), (0, 0, 0))
     font = ImageFont.truetype(font='font/simhei.ttf', size=25)
     draw = ImageDraw.Draw(no_signal_img)  # 绘图声明
@@ -34,17 +32,19 @@ def creat_no_signal(new_w, new_h):
     left = int((new_w - label_size[0]) / 2)
     top = int((new_h - label_size[1]) / 2)
     location = (left, top)
-    draw.text(location, str(label,'UTF-8'), fill=(255, 255, 255), font=font)
+    draw.text(location, str(label, 'UTF-8'), fill=(255, 255, 255), font=font)
     del draw
 
     no_signal_img = np.array(no_signal_img)
-    no_signal_img= cv.rectangle(no_signal_img, (0, 0), (new_w-1, new_h-1), (0, 0, 255), 1)
+    no_signal_img = cv.rectangle(no_signal_img, (0, 0), (new_w - 1, new_h - 1), (0, 0, 255), 1)
 
     return no_signal_img
 
 
-def concat(path_list, new_w, new_h):
+# 拼接图像
+def concat(path_list, new_w, new_h, size):
     # 读取图像
+
     imgs = []
     for f in path_list:
         img = cv.imread(f[0])
@@ -78,16 +78,24 @@ def concat(path_list, new_w, new_h):
     return img_concat
 
 
-image = concat(path_list, new_w, new_h)
+def image(size):
+    scale = int(size ** 0.5)
+    new_w = int(ori_w / scale)
+    new_h = int(ori_h / scale)
+    image = concat(path_list, new_w, new_h, size)
+    return image
 
-cut_img = []
-for y in range(scale):
-    for x in range(scale):
-        cut_img.append(image[y*new_h:(y+1)*new_h, x*new_w:(x+1)*new_w])
 
-cv.imshow("concat.jpg",image)
+def split_img(image, size):
+    cut_img = []
+    scale = int(size ** 0.5)
+    new_w = int(ori_w / scale)
+    new_h = int(ori_h / scale)
+    for y in range(scale):
+        for x in range(scale):
+            cut_img.append(image[y * new_h:(y + 1) * new_h, x * new_w:(x + 1) * new_w])
+    # cv.imshow("concat.jpg", image)
+    for i, img in zip(range(size), cut_img[:len(path_list)]):
+        cv.imshow(str(i) + ".jpg", img)
 
-for i, img in zip(range(size), cut_img[:len(path_list)]):
-    cv.imshow(str(i)+".jpg",img)
-
-cv.waitKey(0)  # 无限期显示窗口
+    # cv.waitKey(0)  # 无限期显示窗口
