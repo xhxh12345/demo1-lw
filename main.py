@@ -143,7 +143,7 @@ class frame3:
 
         #
         tk.Entry(frameOne, textvariable=cap_str, width=30).grid(row=1)
-        tkinter.Button(frameOne, text='下一步', font=fontStyle).grid(column=1, row=1)
+        tkinter.Button(frameOne, text='确认', font=fontStyle).grid(column=1, row=1)
 
         #
         tkinter.Button(frameTwo, text='yolo', font=fontStyle).grid(column=1, row=1)
