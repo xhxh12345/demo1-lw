@@ -80,6 +80,11 @@ def concat(path_list, new_w, new_h):
 
 image = concat(path_list, new_w, new_h)
 
+cut_img = []
+for y in range(scale):
+    for x in range(scale):
+        cut_img.append(image[y*new_h:(y+1)*new_h, x*new_w:(x+1)*new_w])
+
 cv.imshow("concat.jpg",image)
 
 for i, img in zip(range(size), cut_img[:len(path_list)]):
