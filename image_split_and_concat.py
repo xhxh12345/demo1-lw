@@ -15,7 +15,7 @@ scale = int(size ** 0.5)
 new_w = int(ori_w / scale)
 new_h = int(ori_h / scale)
 
-data_frameA=pd.read_excel(r'E:\test_video\path_all.xlsx',usecols='D', header=None, keep_default_na=False)
+data_frameA=pd.read_excel(r'多路视频流导入配置表.xlsx',usecols='D', header=None, keep_default_na=False)
 path_list = data_frameA.values.tolist()
 
 while [''] in path_list:
