@@ -4,7 +4,7 @@ import tkinter.ttk
 import tkinter.messagebox
 import cv2
 from tkinter import filedialog
-import image_split_and_concat
+from imageProcessing import image_split_and_concat
 
 
 # 打开系统文件路径方法
