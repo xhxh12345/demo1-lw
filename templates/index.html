@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <title>远程直播</title>
+</head>
+<body>
+<img src="{{ url_for('video_feed') }}">
+<style>
+    * { padding: 0; margin: 0 }
+    img { width: 100%; }
+</style>
+<script>
+    $(document).dblclick(//双击
+        function (event) {
+            event = event || window.event;
+            var x = event.offsetX || event.originalEvent.layerX;
+            var y = event.offsetY || event.originalEvent.layerY;
+            var x_rate = x / document.body.clientWidth;
+            var y_rate = y / document.body.clientHeight;
+            sendPosition('/double', x_rate, y_rate)
+        }
+    );
+
+
+    $(document).mousedown(//按下
+        function(event) {
+            if (1 == event.which){//左键
+                event = event || window.event;
+                var x = event.offsetX || event.originalEvent.layerX;
+                var y = event.offsetY || event.originalEvent.layerY;
+                var x_rate = x / document.body.clientWidth;
+                var y_rate = y / document.body.clientHeight;
+                sendPosition('/down', x_rate, y_rate)
+                $(document).bind('mousemove',start)
+                $(document).bind('mouseup',end)
+                return false
+            }else if (3 == event.which){//右键
+                event = event || window.event;
+                var x = event.offsetX || event.originalEvent.layerX;
+                var y = event.offsetY || event.originalEvent.layerY;
+                var x_rate = x / document.body.clientWidth;
+                var y_rate = y / document.body.clientHeight;
+                sendPosition('/right', x_rate, y_rate)
+            }
+        }
+    )
+    function start(event){//移动
+        event = event || window.event;
+        var x = event.offsetX || event.originalEvent.layerX;
+        var y = event.offsetY || event.originalEvent.layerY;
+        var x_rate = x / document.body.clientWidth;
+        var y_rate = y / document.body.clientHeight;
+        sendPosition('/move', x_rate, y_rate)
+        return false
+    }
+    function end(event){//释放
+        event = event || window.event;
+        var x = event.offsetX || event.originalEvent.layerX;
+        var y = event.offsetY || event.originalEvent.layerY;
+        var x_rate = x / document.body.clientWidth;
+        var y_rate = y / document.body.clientHeight;
+        sendPosition('/up', x_rate, y_rate)
+        $(this).unbind('mousemove')
+        $(this).unbind('mouseup')
+    }
+
+    function sendPosition(position, xrate, yrate) {
+        $.ajax({
+            url: position + "?xrate=" + xrate + "&yrate=" + yrate,
+            type: "get",
+            success: function (data) {
+                console.log(data)
+            },
+            error: function (error) {
+                alert(error)
+            }
+        })
+    }
+
+</script>
+</body>
+</html>
